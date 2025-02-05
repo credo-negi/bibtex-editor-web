@@ -1,0 +1,1 @@
+export type Theme = "primary" | "secondary" | "tertiary" | "error" | "success" | "warning" | "info";
