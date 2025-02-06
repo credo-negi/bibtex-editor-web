@@ -14,6 +14,8 @@
 ```bash
 npm install
 ```
+> [!IMPORTANT]
+> 現状、`vite-plugin-stylex`が`Vite 6`に正式対応できていないようです([Issue](https://github.com/HorusGoul/vite-plugin-stylex/issues/97))。インストール時は`--force`オプションをつけるか、Viteのバージョンを下げるしかなさそうです。
 
 ## 使用方法
 
