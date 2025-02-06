@@ -45,7 +45,7 @@ export const ToastProvider = ({ children, keepTime = 3000, duration = 1000 }: To
       prev.map((msg) => (msg.id === id ? { ...msg, state: ToastState.EXITTING } : msg))
     );
     // duration 後に id が一致するメッセージを削除する
-    const timer = setTimeout(() => {
+    const timer = self.setTimeout(() => {
       setMessages((prev) => prev.filter((msg) => msg.id !== id));
     }, duration);
     return () => clearTimeout(timer);
@@ -55,16 +55,16 @@ export const ToastProvider = ({ children, keepTime = 3000, duration = 1000 }: To
     message.id = message.id || nextId;
     setNextId((prev) => prev + 1);
     setMessages((prev) => [...prev, message]);
-    const enterTimer = setTimeout(() => {
+    const entertimer = self.setTimeout(() => {
         setMessages((prev) =>
             prev.map((msg) => (msg.id === message.id ? { ...msg, state: ToastState.ENTERED } : msg))
         );
     }, 300);
-    const timer = setTimeout(() => {
+    const timer = self.setTimeout(() => {
       removeMessage(message.id);
     }, keepTime);
     return () => {
-        clearTimeout(enterTimer);
+        clearTimeout(entertimer);
         clearTimeout(timer);
     }
   }, [nextId, keepTime, removeMessage]);

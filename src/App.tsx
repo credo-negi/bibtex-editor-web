@@ -119,7 +119,10 @@ const App = () => {
     }, [sideBarOpen, setSideBarOpen])
     const handleMouseLeaveSideBar = useCallback(() => {
         if (!pointerEnterSideBar) return;
-        setSideBarOpen(false)
+        const timer = self.setTimeout(() => {
+            setSideBarOpen(false)
+        }, 500)
+        return () => clearTimeout(timer)
     }, [pointerEnterSideBar, setSideBarOpen])
 
     const handleScrimClick = () => {

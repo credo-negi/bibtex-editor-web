@@ -77,7 +77,7 @@ const Tooltip = ({
         if (disabled) return;
         if (event.type === "touchstart") {
             // event.preventDefault();
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => self.setTimeout(resolve, 100));
         }
         setShow(true);
         if (tooltipRef.current && tooltipWrapperRef.current) {
@@ -124,7 +124,7 @@ const Tooltip = ({
         event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.TouchEvent<HTMLDivElement>
     ) => {
         if (event.type === "touchend") {
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            await new Promise((resolve) => self.setTimeout(resolve, 5000));
         }
         if (tooltipRef.current) {
             const tooltipDom = tooltipRef.current;

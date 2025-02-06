@@ -127,7 +127,7 @@ const BibTeXEditor__EditorSection
             : "";
 
             const handleCloseButtonClick = useCallback(() => {
-                const timer = setTimeout(() => {
+                const timer = self.setTimeout(() => {
                     setIsOpenIndex(null);
                 }, 150);
                 return () => clearTimeout(timer);

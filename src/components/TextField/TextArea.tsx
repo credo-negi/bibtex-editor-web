@@ -99,7 +99,7 @@ const TextArea = ({ label, error, helperText, styleXStyles, id, defaultValue = "
             if (timeOutRef.current) {
                 clearTimeout(timeOutRef.current);
             }
-            timeOutRef.current = setTimeout(() => {
+            timeOutRef.current = self.setTimeout(() => {
                 onSave(value);
             }, 100);
         }

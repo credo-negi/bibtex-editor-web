@@ -79,7 +79,6 @@ export const BibTeXDataProvider = ({ children }: BibTeXDataProviderProps) => {
         if ( BibTeXData.length === 0 ) {
             setFileName("");
             setEditorState("closed");
-            setHistory({ prev: [], next: [] });
         }
     }, [BibTeXData]);
 
@@ -121,7 +120,7 @@ export const BibTeXDataProvider = ({ children }: BibTeXDataProviderProps) => {
         let timer: number;
         if (index === null && editorState === "open") {
             setEditorState("closing");
-            timer = setTimeout(() => {
+            timer = self.setTimeout(() => {
                 setEditorState("closed");
                 setIsOpenIndexState(null);
             }, 250);

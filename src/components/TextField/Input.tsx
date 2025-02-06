@@ -106,7 +106,7 @@ const Input = ({
         if (timeOutRef.current) {
             clearTimeout(timeOutRef.current);
         }
-        timeOutRef.current = setTimeout(() => {
+        timeOutRef.current = self.setTimeout(() => {
             if (onSave) {
                 onSave(value);
             }

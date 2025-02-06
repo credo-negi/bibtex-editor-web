@@ -29,13 +29,13 @@ export const SideBarProvider = ({ children }: SideBarProviderProps) => {
         let timer: number;
         if (value) {
             setSideBarState("opening");
-            timer = setTimeout(() => {
+            timer = self.setTimeout(() => {
                 _setSideBarOpen(value);
                 setSideBarState("open");
             }, 250);
         } else {
             setSideBarState("closing");
-            timer = setTimeout(() => {
+            timer = self.setTimeout(() => {
                 _setSideBarOpen(value);
                 setSideBarState("closed");
             }, 250);

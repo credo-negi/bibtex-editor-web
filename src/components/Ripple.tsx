@@ -340,7 +340,7 @@ const Ripple = (props: RippleProps) => {
 
             // wait for the press animation to finish
             await new Promise((resolve) => {
-                setTimeout(resolve, pressDuration - pressAnimationPlayState)
+                self.setTimeout(resolve, pressDuration - pressAnimationPlayState)
             })
 
             if (rippleState.pressAnimation !== animation) {

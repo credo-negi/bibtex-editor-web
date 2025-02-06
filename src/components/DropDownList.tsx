@@ -299,7 +299,7 @@ const DropDownList__ItemWrapper = forwardRef(
             setState("open");
         } else {
             setState("closing");
-            timer = setTimeout(() => {
+            timer = self.setTimeout(() => {
                 setState("closed");
             }, transitionDuration_close);
         }

@@ -130,7 +130,7 @@ const TextField = (props: TextAreaProps | InputProps) => {
         if (timeOutRef.current) {
             clearTimeout(timeOutRef.current);
         }
-        timeOutRef.current = setTimeout(() => {
+        timeOutRef.current = self.setTimeout(() => {
             if (onSave) {
                 onSave(value);
             }
@@ -152,7 +152,7 @@ const TextField = (props: TextAreaProps | InputProps) => {
         if (timeOutRef.current) {
             clearTimeout(timeOutRef.current);
         }
-        timeOutRef.current = setTimeout(() => {
+        timeOutRef.current = self.setTimeout(() => {
             if (onSave) {
                 onSave(value);
             }
