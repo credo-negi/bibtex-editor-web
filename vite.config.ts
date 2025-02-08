@@ -15,8 +15,8 @@ export default defineConfig(() => {
       outDir: 'dist',
       // dist フォルダが存在しない場合は作成
       emptyOutDir: true,
-      // base パスを指定
-      base: isGitHubActions ? `/${repoName}/` : '/',
     },
+    // base パスを指定
+    base: isGitHubActions ? `/${repoName}/` : '/',
   }
 })
