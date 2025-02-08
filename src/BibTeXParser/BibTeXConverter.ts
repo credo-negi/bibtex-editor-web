@@ -1,5 +1,10 @@
 import { BibTeXObject, isBibTeXComment, isBibTeXEntry, isBibTeXPreamble } from '../types/BibTeXTypes';
 
+/**
+ * BibTeXオブジェクトをBibTeX文字列に変換する
+ * @param BibTeXObject BibTeXオブジェクト
+ * @returns BibTeX文字列
+ */
 export const convertBibTeXObject2BibTeXString = (BibTeXObject: BibTeXObject): string => {
     if (isBibTeXPreamble(BibTeXObject)) {
         // BibTeXObject.valueの先頭に@preamble{がある場合は削除
@@ -18,6 +23,11 @@ export const convertBibTeXObject2BibTeXString = (BibTeXObject: BibTeXObject): st
     }
 }
 
+/**
+ * BibTeXオブジェクトの配列をBibTeX文字列に変換する
+ * @param BibTeXObjectArray BibTeXオブジェクトの配列
+ * @returns BibTeX文字列
+ */
 const convertBibTeXObjectArray2BibTeXString = (BibTeXObjectArray: BibTeXObject[]): string => {
     return BibTeXObjectArray.map(convertBibTeXObject2BibTeXString).join("\n");
 }
