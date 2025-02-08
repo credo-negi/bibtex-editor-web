@@ -1,6 +1,4 @@
-import type { BibTeXEntry, BibTeXEntryName, BibTeXObject } from "../types/BibTeXTypes";
-import { BibTeXEntries, isBibTeXEntryName } from "../types/BibTeXTypes";
-import { lintBibTeXObject } from "./BibTeXLinter";
+import type { BibTeXEntry, BibTeXObject } from "../types/BibTeXTypes";
 
 /**
  * BibTeXパーサークラス
@@ -47,13 +45,11 @@ class BibTeXParser {
         this.skipWhitespace();
 
         if (type.toLowerCase() === "preamble") {
-            return lintBibTeXObject({ type: "preamble", value: this.parseString() });
+            return { type: "preamble", value: this.parseString() };
         } else if (type.toLowerCase() === "comment") {
-            return lintBibTeXObject({ type: "comment", value: this.parseString() });
+            return { type: "comment", value: this.parseString() };
         } else {
-            return lintBibTeXObject(this.parseEntry((
-                type in BibTeXEntries ? type : "unknown"
-            )));
+            return this.parseEntry(type);
         }
     }
 
@@ -62,7 +58,7 @@ class BibTeXParser {
      * @param type エントリータイプの文字列
      * @returns 文字列を解析して得られたエントリーオブジェクト
      */
-    private parseEntry(type: BibTeXEntryName): BibTeXEntry {
+    private parseEntry(type: string): BibTeXEntry {
         const warnings: string[] = [];
         this.consume("{");
         const citeKey = this.parseIdentifier();
@@ -85,7 +81,7 @@ class BibTeXParser {
         }
         this.consume("}");
         return {
-            type: isBibTeXEntryName(type) ? type : "unknown",
+            type: type,
             citeKey, fields, warnings
         };
     }
