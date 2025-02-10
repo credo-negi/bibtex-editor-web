@@ -127,6 +127,7 @@ const style = stylex.create({
     mainText: {
         display: "flex",
         alignItems: "center",
+        whiteSpace: "nowrap",
     },
     centerSection__shrink: {
         maxWidth: "0",
