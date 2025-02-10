@@ -98,13 +98,10 @@ const style = stylex.create({
 })
 
 const App = () => {
-    const { colorScheme, setColorScheme, screen } = useDesignSkin()
+    const { screen } = useDesignSkin()
     const { fileName } = useBibTeXData()
     const [pointerEnterSideBar, setPointerEnterSideBar] = useState(false)
     const { sideBarOpen, setSideBarOpen, sideBarState } = useSideBar()
-    const handleClickColorScheme = () => {
-        setColorScheme(colorScheme === "light" ? "dark" : "light")
-    }
 
     const handleClickSideBar = () => {
         setSideBarOpen(!sideBarOpen)
