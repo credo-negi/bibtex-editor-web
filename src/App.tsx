@@ -8,7 +8,6 @@ import { useDesignSkin } from "./context/DesignSkinContext"
 import TopHeader from "./components/TopHeader"
 import IconButton from "./components/IconButton"
 import SideBar, { useSideBar } from "./components/SideBar"
-import { useCallback, useState } from "react"
 
 const style = stylex.create({
     app: {
@@ -100,25 +99,11 @@ const style = stylex.create({
 const App = () => {
     const { screen } = useDesignSkin()
     const { fileName } = useBibTeXData()
-    const [pointerEnterSideBar, setPointerEnterSideBar] = useState(false)
     const { sideBarOpen, setSideBarOpen, sideBarState } = useSideBar()
 
     const handleClickSideBar = () => {
         setSideBarOpen(!sideBarOpen)
     }
-    const handleMouseEnterSideBar = useCallback(() => {
-        if (!sideBarOpen) {
-            setPointerEnterSideBar(true)
-            setSideBarOpen(true)
-        } else {
-            setPointerEnterSideBar(false)
-        }
-    }, [sideBarOpen, setSideBarOpen])
-    const handleMouseLeaveSideBar = useCallback(() => {
-        if (!pointerEnterSideBar) return;
-        setPointerEnterSideBar(false)
-        setSideBarOpen(false)
-    }, [pointerEnterSideBar, setSideBarOpen])
 
     const handleScrimClick = () => {
         setSideBarOpen(false);
@@ -139,8 +124,6 @@ const App = () => {
             </TopHeader>
             <SideBar
                 styleXStyles={style.sideBar}
-                onMouseEnter={handleMouseEnterSideBar}
-                onMouseLeave={handleMouseLeaveSideBar}
             />
             {screen !== "desktop" &&
                 <div {...stylex.props(

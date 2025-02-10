@@ -13,6 +13,8 @@ interface SideBarContextProps {
     sideBarOpen: boolean;
     sideBarState: "closed" | "closing" | "open" | "opening";
     setSideBarOpen: (value: boolean) => void;
+    mouseEnterSideBarRef: { current: boolean };
+    onMouseEnterSideBar: (event: React.MouseEvent) => void;
 }
 
 interface SideBarProviderProps {
@@ -25,6 +27,7 @@ const SIDEBAR_ANIMATION_DURATION = 250;
 export const SideBarProvider = ({ children }: SideBarProviderProps) => {
     const [sideBarOpen, _setSideBarOpen] = useState(false);
     const [sideBarState, setSideBarState] = useState<"closed" | "closing" | "opening" | "open">("closed");
+    const mouseEnterSideBarRef = useRef(false);
 
     const setSideBarOpen = useCallback((value: boolean) => {
         let timer: number;
@@ -44,8 +47,21 @@ export const SideBarProvider = ({ children }: SideBarProviderProps) => {
         return () => clearTimeout(timer);
     }, []);
 
+    const onMouseEnterSideBar = useCallback((event: React.MouseEvent) => {
+        if (sideBarOpen && !mouseEnterSideBarRef.current) return;
+        mouseEnterSideBarRef.current = (event.type === "mouseenter");
+        const timer = self.setTimeout(() => {
+            if (mouseEnterSideBarRef.current) {
+                setSideBarOpen(true);
+            } else {
+                setSideBarOpen(false);
+            }
+        }, SIDEBAR_ANIMATION_DURATION);
+        return () => clearTimeout(timer);
+    }, [sideBarOpen, setSideBarOpen]);
+
     return (
-        <SideBarContext.Provider value={{ sideBarOpen, sideBarState, setSideBarOpen }}>
+        <SideBarContext.Provider value={{ sideBarOpen, sideBarState, setSideBarOpen, mouseEnterSideBarRef, onMouseEnterSideBar }}>
             {children}
         </SideBarContext.Provider>
     )
@@ -201,7 +217,7 @@ const SideBar = ({ styleXStyles, ...rest}: SideBarProps) => {
     const { handleClickToInputBibFile, addBibTeXData } = useBibTeXData();
     const { colorScheme, setColorScheme, contrast, setContrast } = useDesignSkin();
     const { screen } = useDesignSkin();
-    const { sideBarState } = useSideBar();
+    const { sideBarState, onMouseEnterSideBar } = useSideBar();
     const FABref = useRef<{ current: HTMLButtonElement | null }>({ current: null });
 
     const handleClickToAddEmptyBibTeXData = () => {
@@ -220,6 +236,8 @@ const SideBar = ({ styleXStyles, ...rest}: SideBarProps) => {
                     styleXStyles, 
                     style[`base__${sideBarState}`],
                 )}
+                onMouseEnter={onMouseEnterSideBar}
+                onMouseLeave={onMouseEnterSideBar}
                 {...rest}
             >
                 <section {...stylex.props(style.fabContainer)}>
