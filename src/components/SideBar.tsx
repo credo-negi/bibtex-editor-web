@@ -20,6 +20,7 @@ interface SideBarProviderProps {
 }
 
 const SideBarContext = createContext<SideBarContextProps | null>(null);
+const SIDEBAR_ANIMATION_DURATION = 250;
 
 export const SideBarProvider = ({ children }: SideBarProviderProps) => {
     const [sideBarOpen, _setSideBarOpen] = useState(false);
@@ -32,13 +33,13 @@ export const SideBarProvider = ({ children }: SideBarProviderProps) => {
             timer = self.setTimeout(() => {
                 _setSideBarOpen(value);
                 setSideBarState("open");
-            }, 250);
+            }, SIDEBAR_ANIMATION_DURATION);
         } else {
             setSideBarState("closing");
             timer = self.setTimeout(() => {
                 _setSideBarOpen(value);
                 setSideBarState("closed");
-            }, 250);
+            }, SIDEBAR_ANIMATION_DURATION);
         }
         return () => clearTimeout(timer);
     }, []);
@@ -79,6 +80,9 @@ const keyframes__closing = stylex.keyframes({
 
 const style = stylex.create({
     base: {
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
         position: {
             default: "unset",
             "@media (max-width: 1024px)": "fixed",
@@ -103,21 +107,22 @@ const style = stylex.create({
             default: "64px",
             "@media (max-width: 1024px)": "256px",
         },
+        maxWidth: {
+            default: "64px",
+            "@media (max-width: 1024px)": "256px",
+        },
         height: "100%",
         backgroundColor: {
             default: "transparent",
             "@media (max-width: 1024px)": "var(--md-sys-color-surface-container)",
         },
         borderRadius: "0 16px 16px 0",
-        transition: {
-            default: "min-width 250ms",
-            "@media (max-width: 1024px)": "none",
-        },
         zIndex: 1000,
         overflowY: "auto",
     },
     base__open: {
         minWidth: "256px",
+        maxWidth: "256px",
         left: {
             default: "unset",
             "@media (max-width: 1024px)": "0px",
@@ -126,6 +131,7 @@ const style = stylex.create({
     },
     base__closed: {
         minWidth: "64px",
+        maxWidth: "64px",
         left: {
             default: "unset",
             "@media (max-width: 1024px)": "-256px",
@@ -139,9 +145,14 @@ const style = stylex.create({
         },
         animation: {
             default: "unset",
-            "@media (max-width: 1024px)": `${keyframes__opening} 250ms forwards`,
+            "@media (max-width: 1024px)": `${keyframes__opening} ${SIDEBAR_ANIMATION_DURATION}ms forwards`,
         },
+        maxWidth: "256px",
         minWidth: "256px",
+        transition: {
+            default: `max-width ${SIDEBAR_ANIMATION_DURATION}ms, min-width ${SIDEBAR_ANIMATION_DURATION}ms`,
+            "@media (max-width: 1024px)": "none",
+        },
     },
     base__closing: {
         left: {
@@ -150,8 +161,14 @@ const style = stylex.create({
         },
         animation: {
             default: "unset",
-            "@media (max-width: 1024px)": `${keyframes__closing} 250ms forwards`,
-        }
+            "@media (max-width: 1024px)": `${keyframes__closing} ${SIDEBAR_ANIMATION_DURATION}ms forwards`,
+        },
+        transition: {
+            default: `min-width ${SIDEBAR_ANIMATION_DURATION}ms`,
+            "@media (max-width: 1024px)": "none",
+        },
+        maxWidth: "64px",
+        minWidth: "64px",
     },
     fabContainer: {
         padding: "8px",
@@ -163,11 +180,26 @@ const style = stylex.create({
             "@media (max-width: 1024px)": "0",
         },
     },
+    primary__container: {
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: "0%",
+        display: "flex",
+        flexDirection: "column",
+    },
+    secondary__container: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "8px",
+        borderTop: "1px solid var(--md-sys-color-surface-divider)",
+    },
 
 })
 
 const SideBar = ({ styleXStyles, ...rest}: SideBarProps) => {
     const { handleClickToInputBibFile, addBibTeXData } = useBibTeXData();
+    const { colorScheme, setColorScheme, contrast, setContrast } = useDesignSkin();
     const { screen } = useDesignSkin();
     const { sideBarState } = useSideBar();
     const FABref = useRef<{ current: HTMLButtonElement | null }>({ current: null });
@@ -223,6 +255,35 @@ const SideBar = ({ styleXStyles, ...rest}: SideBarProps) => {
                             }
                         />
                     </DropDownList.Root>
+                </section>
+                <section {...stylex.props(style.primary__container)}></section>
+                <section {...stylex.props(style.secondary__container)}>
+                    <Button
+                        size="medium"
+                        theme="tertiary"
+                        buttonStyle="text"
+                        shrink={!sideBarState.startsWith("open") && screen === "desktop"}
+                        leading={
+                            colorScheme === "light" 
+                                ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+                                : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
+                        }
+                        onClick={() => setColorScheme(colorScheme === "light" ? "dark" : "light")}
+                    >
+                        {colorScheme === "light" ? "ダークモードに変更" : "ライトモードに変更"}
+                    </Button>
+                    <Button
+                        size="medium"
+                        theme="tertiary"
+                        buttonStyle="text"
+                        shrink={!sideBarState.startsWith("open") && screen === "desktop"}
+                        leading={
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm40-83q119-15 199.5-104.5T800-480q0-123-80.5-212.5T520-797v634Z"/></svg>
+                        }
+                        onClick={() => setContrast(contrast === "high" ? "medium" : "high")}
+                    >
+                        {contrast === "high" ? "コントラストを下げる" : "コントラストを上げる"}
+                    </Button>
                 </section>
             </div>
         </>
