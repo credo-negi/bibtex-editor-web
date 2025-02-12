@@ -5,7 +5,7 @@ import * as stylex from "@stylexjs/stylex"
 import BibTeXEditor from "./components/BibTeXEditor/BibTeXEditor"
 import { useBibTeXData } from "./context/BibTeXDataContext"
 import { useDesignSkin } from "./context/DesignSkinContext"
-import { TopHeader } from "./components/TopHeader"
+import TopHeader from "./components/TopHeader"
 import IconButton from "./components/IconButton"
 import SideBar, { useSideBar } from "./components/SideBar"
 
