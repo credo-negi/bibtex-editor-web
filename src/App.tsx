@@ -5,7 +5,7 @@ import * as stylex from "@stylexjs/stylex"
 import BibTeXEditor from "./components/BibTeXEditor/BibTeXEditor"
 import { useBibTeXData } from "./context/BibTeXDataContext"
 import { useDesignSkin } from "./context/DesignSkinContext"
-import TopHeader from "./components/TopHeader"
+import { TopHeader } from "./components/TopHeader"
 import IconButton from "./components/IconButton"
 import SideBar, { useSideBar } from "./components/SideBar"
 
@@ -110,18 +110,20 @@ const App = () => {
     }
     return (
         <div {...stylex.props(style.app)}>
-            <TopHeader styleXStyles={style.heroSection}>
-                <IconButton onClick={handleClickSideBar}>
-                    {sideBarOpen
-                        ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z" /></svg>
-                        : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" /></svg>}
-                </IconButton>
-                <p>
+            <TopHeader.root styleXStyles={style.heroSection}>
+                <TopHeader.leftSection>
+                    <IconButton onClick={handleClickSideBar}>
+                        {sideBarOpen
+                            ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z" /></svg>
+                            : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" /></svg>}
+                    </IconButton>
+                </TopHeader.leftSection>
+                <TopHeader.centerSection>
                     {(fileName && fileName !== "") ? fileName : "BibTeX Editor"}
-                </p>
-                <section>
-                </section>
-            </TopHeader>
+                </TopHeader.centerSection>
+                <TopHeader.rightSection>
+                </TopHeader.rightSection>
+            </TopHeader.root>
             <SideBar
                 styleXStyles={style.sideBar}
             />

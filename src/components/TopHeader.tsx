@@ -1,7 +1,7 @@
 import * as stylex from "@stylexjs/stylex"
 
 interface TopHeaderProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     styleXStyles?: stylex.StyleXStyles;
 }
 
@@ -24,23 +24,26 @@ const style = stylex.create({
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 0,
     },
     topHeader__rightSection: {
         display: "flex",
         justifyContent: "flex-end",
         alignItems: "center",
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 0,
     },
     topHeader__centerSection: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        flexGrow: 1,
-        flexShrink: 1,
-        flexBasis: 0,
     },
 })
 
-export const TopHeader__leftSection = ({
+const leftSection = ({
     children,
     styleXStyles,
 }: TopHeaderProps) => {
@@ -51,7 +54,7 @@ export const TopHeader__leftSection = ({
     );
 }
 
-export const TopHeader__rightSection = ({
+const rightSection = ({
     children,
     styleXStyles,
 }: TopHeaderProps) => {
@@ -62,7 +65,18 @@ export const TopHeader__rightSection = ({
     );
 }
 
-const TopHeader = ({
+const centerSection = ({
+    children,
+    styleXStyles,
+}: TopHeaderProps) => {
+    return (
+        <div {...stylex.props(style.topHeader__centerSection, styleXStyles)}>
+            {children}
+        </div>
+    );
+}
+
+const root = ({
     children,
     styleXStyles,
 }: TopHeaderProps) => {
@@ -73,4 +87,9 @@ const TopHeader = ({
     );
 }
 
-export default TopHeader;
+export const TopHeader = {
+    root,
+    leftSection,
+    rightSection,
+    centerSection,
+}

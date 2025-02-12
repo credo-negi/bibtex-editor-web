@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import Ripple from "./Ripple";
 import { type Theme } from "../types/theme";
 import CJKBottomOffset from "./CJKBottomOffset";
@@ -14,6 +14,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     leading?: React.ReactNode;
     trailing?: React.ReactNode;
     shrink?: boolean;
+    shrinkDuration?: number;
     styleXStyles?: stylex.StyleXStyles;
 }
 
@@ -109,7 +110,8 @@ const style = stylex.create({
         alignItems: "center",
         overflow: "hidden",
         maxWidth: "100%",
-        transition: "max-width 250ms, opacity 250ms",
+        "--shrink-duration": "250ms",
+        transition: "max-width var(--shrink-duration), opacity var(--shrink-duration)",
         padding: "0 24px",
     },
     centerSection__withLeading: {
@@ -446,13 +448,21 @@ const Button = forwardRef(function Button (props: ButtonProps, ref: React.Ref<{ 
         styleXStyles,
         disabled,
         onClick,
+        shrinkDuration = 250,
         ...rest } = props;
 
     const localRef = useRef<HTMLButtonElement>(null);
+    const centerSectionRef = useRef<HTMLSpanElement>(null);
 
     useImperativeHandle(ref, () => ({
         current: localRef.current,
     }), [localRef]);
+
+    useEffect(() => {
+        if (shrink && centerSectionRef.current && shrinkDuration !== 250) {
+            centerSectionRef.current.style.setProperty("--shrink-duration", `${shrinkDuration}ms`);
+        }
+    }, [shrink, shrinkDuration, centerSectionRef]);
 
     return (
         <button 
@@ -498,7 +508,10 @@ const Button = forwardRef(function Button (props: ButtonProps, ref: React.Ref<{ 
                                 : style.centerSection__withTrailing)
                             : {},
                     )}>
-                        <span {...stylex.props(style.mainText)}>
+                        <span 
+                            {...stylex.props(style.mainText)}
+                            ref={centerSectionRef}
+                        >
                             <CJKBottomOffset>
                                 {children}
                             </CJKBottomOffset>
