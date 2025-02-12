@@ -49,12 +49,13 @@ const style = stylex.create({
         "--icon-size": "24px",
         "--icon-margin": "16px",
         "--button-height": "40px",
+        "--shrink-duration": "250ms",
         backgroundColor: "var(--button-background-color)",
         color: "var(--button-text-color)",
         overflow: "hidden",
         cursor: "pointer",
         fill: "var(--button-text-color)",
-        transition: "max-width 250ms",
+        transition: "max-width var(--shrink-duration)",
         userSelect: "none",
         "::before": {
             content: "''",
@@ -105,12 +106,12 @@ const style = stylex.create({
     },
     centerSection: {
         boxSizing: "border-box",
-        display: "flex",
-        height: "100%",
-        alignItems: "center",
+        display: "block",
+        height: "1.5em",
         overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
         maxWidth: "100%",
-        "--shrink-duration": "250ms",
         transition: "max-width var(--shrink-duration), opacity var(--shrink-duration)",
         padding: "0 24px",
     },
@@ -125,11 +126,6 @@ const style = stylex.create({
     },
     centerSection__withTrailing__outlined: {
         paddingRight: "47px",
-    },
-    mainText: {
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap",
     },
     centerSection__shrink: {
         maxWidth: "0",
@@ -146,12 +142,12 @@ const style = stylex.create({
     leading: {
         left: "0",
         translate: "calc(var(--translate-x) * 1) 0",
-        transition: "translate 250ms",
+        transition: "translate var(--shrink-duration)",
     },
     trailing: {
         right: "0",
         translate: "calc(var(--translate-x) * -1) 0",
-        transition: "translate 250ms",
+        transition: "translate var(--shrink-duration)",
     },
     icon__shrink: {
         "--translateX": "8px",
@@ -437,20 +433,19 @@ const style = stylex.create({
     },
 });
 
-const Button = forwardRef(function Button (props: ButtonProps, ref: React.Ref<{ current: HTMLButtonElement | null }>) {
-    const { 
-        children, 
-        leading, trailing, 
-        buttonStyle = "text", 
-        theme = "primary", 
-        size = "medium", 
+const Button = forwardRef(function Button(props: ButtonProps, ref: React.Ref<{ current: HTMLButtonElement | null }>) {
+    const {
+        children,
+        leading, trailing,
+        buttonStyle = "text",
+        theme = "primary",
+        size = "medium",
         shrink,
         styleXStyles,
         disabled,
         onClick,
         shrinkDuration = 250,
         ...rest } = props;
-
     const localRef = useRef<HTMLButtonElement>(null);
     const centerSectionRef = useRef<HTMLSpanElement>(null);
 
@@ -459,73 +454,70 @@ const Button = forwardRef(function Button (props: ButtonProps, ref: React.Ref<{ 
     }), [localRef]);
 
     useEffect(() => {
-        if (shrink && centerSectionRef.current && shrinkDuration !== 250) {
-            centerSectionRef.current.style.setProperty("--shrink-duration", `${shrinkDuration}ms`);
+        if (localRef.current && shrinkDuration !== 250) {
+            localRef.current.style.setProperty("--shrink-duration", `${shrinkDuration}ms`);
         }
-    }, [shrink, shrinkDuration, centerSectionRef]);
+    }, [shrinkDuration, localRef]);
 
     return (
-        <button 
+        <button
             aria-disabled={disabled}
             onClick={!disabled || props["aria-disabled"] === "false" ? onClick : undefined}
-            {...stylex.props(style.button, 
-            buttonStyle !== "text" && style[`${buttonStyle}`],
-            style[`${buttonStyle}_${theme}`], 
-            style[`button__${size}`],
-            styleXStyles,
-            shrink && style.button__shrink,
-            disabled && (style.disabled, style[`disabled__${buttonStyle}`])
-        )} {...rest} ref={localRef}>
-            <Ripple 
-            parentRef={localRef}
-            buttonStyle={buttonStyle}
-            theme={theme}
-            rippleWithKeyDown={["Enter", " "]}
-            disabled={disabled}
+            {...stylex.props(style.button,
+                buttonStyle !== "text" && style[`${buttonStyle}`],
+                style[`${buttonStyle}_${theme}`],
+                style[`button__${size}`],
+                styleXStyles,
+                shrink && style.button__shrink,
+                disabled && (style.disabled, style[`disabled__${buttonStyle}`])
+            )} {...rest} ref={localRef}>
+            <Ripple
+                parentRef={localRef}
+                buttonStyle={buttonStyle}
+                theme={theme}
+                rippleWithKeyDown={["Enter", " "]}
+                disabled={disabled}
             />
-                {leading && 
-                    <span 
-                        {...stylex.props(
-                            style[`icon${buttonStyle === "outlined" ? "__outlined" : ""}`],
-                            style.leading,
-                            shrink && style[`icon__shrink__${size}${buttonStyle === "outlined" ? "__outlined" : ""}`]
-                        )}
+            {leading &&
+                <span
+                    {...stylex.props(
+                        style[`icon${buttonStyle === "outlined" ? "__outlined" : ""}`],
+                        style.leading,
+                        shrink && style[`icon__shrink__${size}${buttonStyle === "outlined" ? "__outlined" : ""}`]
+                    )}
                 >
                     {leading}
                 </span>}
-                {children && 
-                    <span {...stylex.props(
+            {children &&
+                <span
+                    ref={centerSectionRef}
+                    {...stylex.props(
                         style.centerSection,
                         shrink ? style.centerSection__shrink : {},
-                        leading 
-                            ? (buttonStyle === "outlined" 
-                                ? style.centerSection__withLeading__outlined 
-                                : style.centerSection__withLeading) 
+                        leading
+                            ? (buttonStyle === "outlined"
+                                ? style.centerSection__withLeading__outlined
+                                : style.centerSection__withLeading)
                             : {},
-                        trailing 
-                            ? (buttonStyle === "outlined" 
-                                ? style.centerSection__withTrailing__outlined 
+                        trailing
+                            ? (buttonStyle === "outlined"
+                                ? style.centerSection__withTrailing__outlined
                                 : style.centerSection__withTrailing)
                             : {},
                     )}>
-                        <span 
-                            {...stylex.props(style.mainText)}
-                            ref={centerSectionRef}
-                        >
-                            <CJKBottomOffset>
-                                {children}
-                            </CJKBottomOffset>
-                        </span>
-                    </span> 
-                }
-                {trailing && 
-                    <span 
-                        {...stylex.props(
-                            style[`icon${buttonStyle === "outlined" ? "__outlined" : ""}`],
-                            style.trailing, 
-                            shrink && style[`icon__shrink__${size}${buttonStyle === "outlined" ? "__outlined" : ""}`]
-                        )}
-                    >
+                    <CJKBottomOffset>
+                        {children}
+                    </CJKBottomOffset>
+                </span>
+            }
+            {trailing &&
+                <span
+                    {...stylex.props(
+                        style[`icon${buttonStyle === "outlined" ? "__outlined" : ""}`],
+                        style.trailing,
+                        shrink && style[`icon__shrink__${size}${buttonStyle === "outlined" ? "__outlined" : ""}`]
+                    )}
+                >
                     {trailing}
                 </span>}
         </button>

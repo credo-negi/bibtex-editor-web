@@ -87,9 +87,11 @@ const root = ({
     );
 }
 
-export const TopHeader = {
+const TopHeader = {
     root,
     leftSection,
     rightSection,
     centerSection,
 }
+
+export default TopHeader;

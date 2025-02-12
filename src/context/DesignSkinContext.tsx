@@ -16,47 +16,73 @@ interface DesignSkinProviderProps {
     children: React.ReactNode;
 }
 
+const matchDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+const matchHighContrast = window.matchMedia("(prefers-contrast: more)");
+const matchScreenSize: {
+    [key in Exclude<ScreenSize, 'tablet'>]: MediaQueryList
+} = {
+    phone: window.matchMedia("(max-width: 768px)"),
+    desktop: window.matchMedia("(min-width: 1024px)"),
+}
+
+// localStorageに値が保存されている場合は，その値を初期値として設定
+// 保存されていない場合は，ブラウザの設定を参照する
+const initialColorScheme = () => {
+    const value =
+        (localStorage.getItem("colorScheme") === "dark" || localStorage.getItem("colorScheme") === "light")
+            ? localStorage.getItem("colorScheme") as ColorScheme
+            : (matchDarkScheme.matches ? "dark" : "light");
+    document.documentElement.classList.add(`color-scheme-${value}`);
+    return value;
+}
+const initialContrast = () => {
+    const value =
+        (localStorage.getItem("contrast") === "high" || localStorage.getItem("contrast") === "default" || localStorage.getItem("contrast") === "medium")
+            ? localStorage.getItem("contrast") as Contrast
+            : (matchHighContrast.matches ? "high" : "default");
+    document.documentElement.classList.add(`contrast-${value}`);
+    return value;
+}
+const initialScreenSize =
+    matchScreenSize.phone.matches ? "phone" : "desktop";
+
 const DesignSkinContext = createContext<DesignSkinContextProps | null>(null);
 
 export const DesignSkinProvider = ({ children }: DesignSkinProviderProps) => {
-    const [colorScheme, setColorSchemeState] = useState<ColorScheme>("light");
-    const [contrast, setContrastState] = useState<Contrast>("default");
-    const [screen, setScreen] = useState<ScreenSize>("desktop");
+    const [colorScheme, _setColorScheme] = useState<ColorScheme>(initialColorScheme);
+    const [contrast, _setContrast] = useState<Contrast>(initialContrast);
+    const [screen, setScreen] = useState<ScreenSize>(initialScreenSize);
     const [forceSystemDesignSkin, setForceSystemDesignSkin] = useState<ForceSystemDesignSkin>({ forceColorScheme: false, forceContrast: false });
 
     const setColorScheme = (newScheme: ColorScheme) => {
-        setColorSchemeState((prev) => {
-            document.documentElement.classList.remove(`color-scheme-${prev}`);
-            document.documentElement.classList.add(`color-scheme-${newScheme}`);
-            return newScheme;
-        })
+        localStorage.setItem("colorScheme", newScheme);
+        _setColorScheme(newScheme);
     }
 
     const setContrast = (newContrast: Contrast) => {
-        setContrastState((prev) => {
-            document.documentElement.classList.remove(`contrast-${prev}`);
-            document.documentElement.classList.add(`contrast-${newContrast}`);
-            return newContrast;
-        })
+        localStorage.setItem("contrast", newContrast);
+        _setContrast(newContrast);
     }
 
-    // ブラウザの設定に応じてカラースキームとコントラスト，スクリーンサイズを設定
+    // ブラウザの設定に応じてカラースキーム，コントラスト，スクリーンサイズを設定
     useEffect(() => {
-        const matchDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-        const matchHighContrast = window.matchMedia("(prefers-contrast: more)");
-        const matchScreenSize: {
-            [key in Exclude<ScreenSize, 'tablet'>]: MediaQueryList
-        } = {
-            phone: window.matchMedia("(max-width: 768px)"),
-            desktop: window.matchMedia("(min-width: 1024px)"),
-        }
         const updateColorScheme = () => {
-            if (forceSystemDesignSkin.forceColorScheme) return;
-            setColorScheme(matchDarkScheme.matches ? "dark" : "light");
+            document.documentElement.classList.remove("color-scheme-dark", "color-scheme-light");
+            if (colorScheme === "default") {
+                const newScheme = matchDarkScheme.matches ? "dark" : "light";
+                document.documentElement.classList.add(`color-scheme-${newScheme}`);
+            } else {
+                document.documentElement.classList.add(`color-scheme-${colorScheme}`);
+            }
         }
         const updateContrast = () => {
-            if (forceSystemDesignSkin.forceContrast) return;
-            setContrast(matchHighContrast.matches ? "high" : "default");
+            document.documentElement.classList.remove("contrast-medium", "contrast-high");
+            if (contrast === "default") {
+                const newContrast = matchHighContrast.matches ? "high" : "default";
+                document.documentElement.classList.add(`contrast-${newContrast}`);
+            } else {
+                document.documentElement.classList.add(`contrast-${contrast}`);
+            }
         }
         const updateScreen = () => {
             if (matchScreenSize.phone.matches) {
@@ -80,12 +106,12 @@ export const DesignSkinProvider = ({ children }: DesignSkinProviderProps) => {
             matchScreenSize.phone.removeEventListener("change", updateScreen);
             matchScreenSize.desktop.removeEventListener("change", updateScreen);
         }
-    }, [forceSystemDesignSkin]);
-    
+    }, [colorScheme, contrast]);
+
     return (
         <DesignSkinContext.Provider value={
-            { 
-                colorScheme, setColorScheme, 
+            {
+                colorScheme, setColorScheme,
                 contrast, setContrast,
                 screen, setScreen,
                 forceSystemDesignSkin, setForceSystemDesignSkin
