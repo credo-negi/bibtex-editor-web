@@ -16,9 +16,9 @@ interface DesignSkinProviderProps {
     children: React.ReactNode;
 }
 
-const matchDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-const matchHighContrast = window.matchMedia("(prefers-contrast: more)");
-const matchScreenSize: {
+const initiallyMatchDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+const initiallyMatchHighContrast = window.matchMedia("(prefers-contrast: more)");
+const initiallyMatchScreen: {
     [key in Exclude<ScreenSize, 'tablet'>]: MediaQueryList
 } = {
     phone: window.matchMedia("(max-width: 768px)"),
@@ -31,7 +31,7 @@ const initialColorScheme = () => {
     const value =
         (localStorage.getItem("colorScheme") === "dark" || localStorage.getItem("colorScheme") === "light")
             ? localStorage.getItem("colorScheme") as ColorScheme
-            : (matchDarkScheme.matches ? "dark" : "light");
+            : (initiallyMatchDarkScheme.matches ? "dark" : "light");
     document.documentElement.classList.add(`color-scheme-${value}`);
     return value;
 }
@@ -39,12 +39,12 @@ const initialContrast = () => {
     const value =
         (localStorage.getItem("contrast") === "high" || localStorage.getItem("contrast") === "default" || localStorage.getItem("contrast") === "medium")
             ? localStorage.getItem("contrast") as Contrast
-            : (matchHighContrast.matches ? "high" : "default");
+            : (initiallyMatchHighContrast.matches ? "high" : "default");
     document.documentElement.classList.add(`contrast-${value}`);
     return value;
 }
 const initialScreenSize =
-    matchScreenSize.phone.matches ? "phone" : "desktop";
+    initiallyMatchScreen.phone.matches ? "phone" : "desktop";
 
 const DesignSkinContext = createContext<DesignSkinContextProps | null>(null);
 
@@ -66,6 +66,14 @@ export const DesignSkinProvider = ({ children }: DesignSkinProviderProps) => {
 
     // ブラウザの設定に応じてカラースキーム，コントラスト，スクリーンサイズを設定
     useEffect(() => {
+        const matchDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        const matchHighContrast = window.matchMedia("(prefers-contrast: more)");
+        const matchScreenSize: {
+            [key in Exclude<ScreenSize, 'tablet'>]: MediaQueryList
+        } = {
+            phone: window.matchMedia("(max-width: 768px)"),
+            desktop: window.matchMedia("(min-width: 1024px)"),
+        }
         const updateColorScheme = () => {
             document.documentElement.classList.remove("color-scheme-dark", "color-scheme-light");
             if (colorScheme === "default") {
