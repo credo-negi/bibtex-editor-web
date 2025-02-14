@@ -331,7 +331,7 @@ const SideBar = ({ styleXStyles, ...rest}: SideBarProps) => {
                         onClick={handleClickToChangeContrast}
                         shrinkDuration={SIDEBAR_ANIMATION_DURATION}
                     >
-                        {contrast === "high" ? "標準のコントラストに変更" : (contrast === "medium" ? "高いコントラストに変更" : "システムのコントラストに合わせる")}
+                        {contrast === "high" ? "システムのコントラストに合わせる" : (contrast === "default" ? "低いコントラストに変更" : "高いコントラストに変更")}
                     </Button>
                 </section>
             </div>
